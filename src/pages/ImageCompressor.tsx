@@ -196,9 +196,9 @@ export default function ImageCompressor() {
             <span className="font-semibold text-sm">Original</span>
             {file && <span className="badge-blue">{formatBytes(file.size)}</span>}
           </div>
-          <div className="card overflow-hidden min-h-48 flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+          <div className="card overflow-hidden aspect-video flex items-center justify-center bg-slate-50 dark:bg-slate-900">
             {previewUrl
-              ? <img src={previewUrl} alt="original" className="max-h-64 max-w-full object-contain p-2" />
+              ? <img src={previewUrl} alt="original" className="max-h-full max-w-full object-contain p-2" />
               : <span className="text-slate-300 text-sm">No image selected</span>
             }
           </div>
@@ -216,9 +216,9 @@ export default function ImageCompressor() {
               </div>
             )}
           </div>
-          <div className="card overflow-hidden min-h-48 flex items-center justify-center bg-slate-50 dark:bg-slate-900">
+          <div className="card overflow-hidden aspect-video flex items-center justify-center bg-slate-50 dark:bg-slate-900">
             {result
-              ? <img src={result.url} alt="compressed" className="max-h-64 max-w-full object-contain p-2" />
+              ? <img src={result.url} alt="compressed" className="max-h-full max-w-full object-contain p-2" />
               : <span className="text-slate-300 text-sm">Result appears here</span>
             }
           </div>
