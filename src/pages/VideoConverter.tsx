@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
 import { Video, Upload, Download, X, Loader2, AlertCircle, Settings2 } from 'lucide-react'
@@ -11,6 +11,7 @@ const OUTPUT_FORMATS = [
   { value: 'mp3', label: 'MP3 Audio', ext: 'mp3', args: ['-vn', '-ar', '44100', '-ac', '2', '-ab', '192k'] },
   { value: 'wav', label: 'WAV Audio', ext: 'wav', args: ['-vn', '-ar', '44100', '-ac', '2'] },
 ]
+const MAX_MEDIA_FILE_SIZE = 500 * 1024 * 1024
 
 function formatBytes(bytes: number) {
   if (bytes === 0) return '0 B'
@@ -40,6 +41,27 @@ export default function VideoConverter() {
   const ffmpegRef = useRef<FFmpeg | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const setInputFile = useCallback((f: File | null) => {
+    if (!f) {
+      setFile(null)
+      setStatus('idle')
+      setLog('')
+      setOutputUrl('')
+      setOutputSize(0)
+      return
+    }
+    if (f.size > MAX_MEDIA_FILE_SIZE) {
+      setStatus('error')
+      setLog('File is too large. Please choose a media file up to 500 MB.')
+      return
+    }
+    setFile(f)
+    setStatus('idle')
+    setLog('')
+    setOutputUrl('')
+    setOutputSize(0)
+  }, [])
+
   const loadFFmpeg = useCallback(async () => {
     if (ffmpegRef.current) return ffmpegRef.current
     const ffmpeg = new FFmpeg()
@@ -61,7 +83,7 @@ export default function VideoConverter() {
     e.preventDefault()
     setDrag(false)
     const f = e.dataTransfer.files[0]
-    if (f && f.type.startsWith('video/') || f?.type.startsWith('audio/')) setFile(f)
+    if (f && (f.type.startsWith('video/') || f.type.startsWith('audio/'))) setInputFile(f)
   }
 
   const convert = async () => {
@@ -92,13 +114,17 @@ export default function VideoConverter() {
   }
 
   const reset = () => {
-    setFile(null)
+    setInputFile(null)
     setStatus('idle')
     setProgress(0)
     setLog('')
-    setOutputUrl('')
-    setOutputSize(0)
   }
+
+  useEffect(() => {
+    return () => {
+      if (outputUrl) URL.revokeObjectURL(outputUrl)
+    }
+  }, [outputUrl])
 
   const fmt = OUTPUT_FORMATS.find(f => f.value === format)!
 
@@ -126,7 +152,7 @@ export default function VideoConverter() {
               type="file"
               accept="video/*,audio/*"
               className="hidden"
-              onChange={e => setFile(e.target.files?.[0] || null)}
+              onChange={e => setInputFile(e.target.files?.[0] || null)}
             />
             {file ? (
               <div>

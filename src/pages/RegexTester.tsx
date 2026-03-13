@@ -14,6 +14,15 @@ const EXAMPLES = [
 ]
 
 const COLORS = ['#fde68a','#bbf7d0','#bfdbfe','#fecaca','#ddd6fe','#fed7aa','#cffafe','#f9a8d4']
+const MAX_PATTERN_LENGTH = 200
+const MAX_TEST_STRING_LENGTH = 20000
+const MAX_MATCHES = 2000
+
+function isPotentiallyUnsafeRegex(pattern: string) {
+  const nestedQuantifiers = /\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]/
+  const overlappingGreedyGroups = /\((?:[^()\\]|\\.)+\)(?:\+|\*)\+/
+  return nestedQuantifiers.test(pattern) || overlappingGreedyGroups.test(pattern)
+}
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState('[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}')
@@ -24,6 +33,33 @@ export default function RegexTester() {
 
   const { matches, highlighted, error, replaceResult } = useMemo(() => {
     if (!pattern) return { matches: [], highlighted: testStr, error: '', groups: [], replaceResult: '' }
+    if (pattern.length > MAX_PATTERN_LENGTH) {
+      return {
+        matches: [],
+        highlighted: testStr,
+        error: `Pattern is too long (${pattern.length}). Max supported length is ${MAX_PATTERN_LENGTH}.`,
+        groups: [],
+        replaceResult: ''
+      }
+    }
+    if (testStr.length > MAX_TEST_STRING_LENGTH) {
+      return {
+        matches: [],
+        highlighted: testStr,
+        error: `Test string is too long (${testStr.length}). Max supported length is ${MAX_TEST_STRING_LENGTH}.`,
+        groups: [],
+        replaceResult: ''
+      }
+    }
+    if (isPotentiallyUnsafeRegex(pattern)) {
+      return {
+        matches: [],
+        highlighted: testStr,
+        error: 'Pattern looks potentially unsafe (catastrophic backtracking risk).',
+        groups: [],
+        replaceResult: ''
+      }
+    }
     try {
       const re = new RegExp(pattern, flags)
       const matches: RegExpExecArray[] = []
@@ -32,6 +68,7 @@ export default function RegexTester() {
         const re2 = new RegExp(pattern, flags)
         while ((m = re2.exec(testStr)) !== null) {
           matches.push(m)
+          if (matches.length >= MAX_MATCHES) break
           if (m.index === re2.lastIndex) re2.lastIndex++
         }
       } else {
@@ -60,8 +97,9 @@ export default function RegexTester() {
       const replaceResult = replace ? testStr.replace(new RegExp(pattern, flags), replace) : ''
 
       return { matches, highlighted: result, error: '', groups, replaceResult }
-    } catch (e: any) {
-      return { matches: [], highlighted: testStr, error: e.message, groups: [], replaceResult: '' }
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e)
+      return { matches: [], highlighted: testStr, error: errorMessage, groups: [], replaceResult: '' }
     }
   }, [pattern, flags, testStr, replace])
 

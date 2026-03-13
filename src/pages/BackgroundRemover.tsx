@@ -1,6 +1,8 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { ImageOff, Upload, Download, X, Loader2, AlertCircle } from 'lucide-react'
 import ToolLayout from '../components/ToolLayout'
+
+const MAX_IMAGE_FILE_SIZE = 50 * 1024 * 1024
 
 
 export default function BackgroundRemover() {
@@ -17,6 +19,14 @@ export default function BackgroundRemover() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const handleFile = useCallback((f: File) => {
+    if (f.size > MAX_IMAGE_FILE_SIZE) {
+      setFile(null)
+      setPreviewUrl('')
+      setOutputUrl('')
+      setError('File is too large. Please choose an image up to 50 MB.')
+      setStatus('error')
+      return
+    }
     setFile(f)
     setPreviewUrl(URL.createObjectURL(f))
     setOutputUrl('')
@@ -61,6 +71,13 @@ export default function BackgroundRemover() {
     setError('')
     setProgress(0)
   }
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+      if (outputUrl) URL.revokeObjectURL(outputUrl)
+    }
+  }, [previewUrl, outputUrl])
 
   return (
     <ToolLayout

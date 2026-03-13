@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { FileImage, Upload, Download, X } from 'lucide-react'
 import ToolLayout from '../components/ToolLayout'
 
@@ -18,6 +18,8 @@ interface Result {
   format: string
 }
 
+const MAX_IMAGE_FILE_SIZE = 50 * 1024 * 1024
+
 export default function ImageCompressor() {
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState('')
@@ -27,12 +29,21 @@ export default function ImageCompressor() {
   const [format, setFormat] = useState<'jpeg' | 'png' | 'webp'>('webp')
   const [drag, setDrag] = useState(false)
   const [origDims, setOrigDims] = useState({ w: 0, h: 0 })
+  const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   const handleFile = useCallback((f: File) => {
+    if (f.size > MAX_IMAGE_FILE_SIZE) {
+      setFile(null)
+      setPreviewUrl('')
+      setResult(null)
+      setError('File is too large. Please choose an image up to 50 MB.')
+      return
+    }
     setFile(f)
     setResult(null)
+    setError('')
     const url = URL.createObjectURL(f)
     setPreviewUrl(url)
     const img = new Image()
@@ -68,6 +79,13 @@ export default function ImageCompressor() {
     const blob = await new Promise<Blob>(r => canvas.toBlob(b => r(b!), mime, q))
     setResult({ url: URL.createObjectURL(blob), size: blob.size, width: w, height: h, format })
   }, [file, previewUrl, format, quality, maxWidth])
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+      if (result?.url) URL.revokeObjectURL(result.url)
+    }
+  }, [previewUrl, result?.url])
 
   const savings = result && file ? Math.round((1 - result.size / file.size) * 100) : 0
 
@@ -113,7 +131,7 @@ export default function ImageCompressor() {
           <div className="card p-4 space-y-4">
             <div>
               <label className="label">Output Format</label>
-              <select className="input" value={format} onChange={e => setFormat(e.target.value as any)}>
+              <select className="input" value={format} onChange={e => setFormat(e.target.value as 'jpeg' | 'png' | 'webp')}>
                 <option value="webp">WebP (best compression)</option>
                 <option value="jpeg">JPEG</option>
                 <option value="png">PNG (lossless)</option>
@@ -157,6 +175,9 @@ export default function ImageCompressor() {
             </button>
             {file && <button className="btn-secondary" onClick={() => { setFile(null); setPreviewUrl(''); setResult(null) }}><X size={16} /></button>}
           </div>
+          {error && (
+            <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+          )}
         </div>
 
         {/* Before */}
