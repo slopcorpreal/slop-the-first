@@ -1,27 +1,36 @@
 import { useState, useEffect } from 'react'
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import {
-  Wrench, Moon, Sun, Github, Menu, X, ChevronRight,
+  Wrench, Moon, Sun, Github, Menu, X, ChevronRight, Search,
   Video, ImageOff, FileImage, QrCode, Braces, Binary,
   TestTube, FileText, Hash, Clock, Link2, GitCompare,
-  Palette, Wand2
+  Palette, Wand2, KeyRound, Lock, Fingerprint,
+  Hash as HashIcon, Type, Calendar, Pipette
 } from 'lucide-react'
+import CommandPalette from './CommandPalette'
 
 const navItems = [
   { path: '/video-converter', label: 'Video Converter', icon: Video, category: 'Media' },
   { path: '/background-remover', label: 'Background Remover', icon: ImageOff, category: 'Media' },
   { path: '/image-compressor', label: 'Image Compressor', icon: FileImage, category: 'Media' },
   { path: '/color-palette', label: 'Color Palette', icon: Palette, category: 'Media' },
+  { path: '/color-converter', label: 'Color Converter', icon: Pipette, category: 'Design' },
+  { path: '/css-gradient', label: 'CSS Gradient', icon: Wand2, category: 'Design' },
   { path: '/json-formatter', label: 'JSON Formatter', icon: Braces, category: 'Dev' },
+  { path: '/jwt', label: 'JWT Debugger', icon: KeyRound, category: 'Dev' },
   { path: '/regex-tester', label: 'Regex Tester', icon: TestTube, category: 'Dev' },
   { path: '/markdown-editor', label: 'Markdown Editor', icon: FileText, category: 'Dev' },
   { path: '/text-diff', label: 'Text Diff', icon: GitCompare, category: 'Dev' },
   { path: '/hash-generator', label: 'Hash Generator', icon: Hash, category: 'Dev' },
+  { path: '/number-base', label: 'Number Base', icon: HashIcon, category: 'Dev' },
+  { path: '/cron', label: 'Cron Parser', icon: Calendar, category: 'Dev' },
+  { path: '/word-counter', label: 'Word Counter', icon: Type, category: 'Text' },
   { path: '/base64', label: 'Base64 Tool', icon: Binary, category: 'Encode' },
   { path: '/url-encoder', label: 'URL Encoder', icon: Link2, category: 'Encode' },
   { path: '/qr-generator', label: 'QR Generator', icon: QrCode, category: 'Generate' },
   { path: '/timestamp', label: 'Timestamp', icon: Clock, category: 'Generate' },
-  { path: '/css-gradient', label: 'CSS Gradient', icon: Wand2, category: 'Generate' },
+  { path: '/password-generator', label: 'Password Gen', icon: Lock, category: 'Generate' },
+  { path: '/uuid', label: 'UUID Generator', icon: Fingerprint, category: 'Generate' },
 ]
 
 function useDarkMode() {
@@ -41,15 +50,30 @@ export default function Layout() {
   const location = useLocation()
   const { dark, toggle } = useDarkMode()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
 
   useEffect(() => {
     setSidebarOpen(false)
   }, [location.pathname])
 
+  // Cmd+K / Ctrl+K shortcut
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setPaletteOpen(p => !p)
+      }
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
   const categories = [...new Set(navItems.map(i => i.category))]
 
   return (
     <div className="min-h-screen flex flex-col">
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
+
       {/* Top nav */}
       <header className="sticky top-0 z-40 h-14 glass bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700">
         <div className="flex items-center h-full px-4 gap-3">
@@ -66,9 +90,23 @@ export default function Layout() {
             <span className="text-gradient">ToolKit</span>
           </Link>
           <div className="flex-1" />
-          <nav className="hidden lg:flex items-center gap-1 text-sm">
-            <Link to="/" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 font-medium">Home</Link>
-          </nav>
+
+          {/* Search / command palette trigger */}
+          <button
+            onClick={() => setPaletteOpen(true)}
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-sm text-slate-400 transition-colors"
+          >
+            <Search size={14} />
+            <span>Search tools…</span>
+            <kbd className="ml-2 px-1.5 py-0.5 text-xs bg-white dark:bg-slate-700 rounded border border-slate-200 dark:border-slate-600 font-mono">⌘K</kbd>
+          </button>
+          <button
+            onClick={() => setPaletteOpen(true)}
+            className="sm:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+          >
+            <Search size={18} />
+          </button>
+
           <button
             onClick={toggle}
             className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"

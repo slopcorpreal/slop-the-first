@@ -15,6 +15,13 @@ import URLEncoder from './pages/URLEncoder'
 import TextDiff from './pages/TextDiff'
 import ColorPalette from './pages/ColorPalette'
 import CSSGradient from './pages/CSSGradient'
+import JWTDebugger from './pages/JWTDebugger'
+import PasswordGenerator from './pages/PasswordGenerator'
+import UUIDGenerator from './pages/UUIDGenerator'
+import NumberBase from './pages/NumberBase'
+import WordCounter from './pages/WordCounter'
+import CronParser from './pages/CronParser'
+import ColorConverter from './pages/ColorConverter'
 
 const BASE = '/slop-the-first'
 
@@ -38,6 +45,13 @@ export default function App() {
           <Route path="/text-diff" element={<TextDiff />} />
           <Route path="/color-palette" element={<ColorPalette />} />
           <Route path="/css-gradient" element={<CSSGradient />} />
+          <Route path="/jwt" element={<JWTDebugger />} />
+          <Route path="/password-generator" element={<PasswordGenerator />} />
+          <Route path="/uuid" element={<UUIDGenerator />} />
+          <Route path="/number-base" element={<NumberBase />} />
+          <Route path="/word-counter" element={<WordCounter />} />
+          <Route path="/cron" element={<CronParser />} />
+          <Route path="/color-converter" element={<ColorConverter />} />
         </Route>
       </Routes>
     </BrowserRouter>
