@@ -103,7 +103,7 @@ export default function RegexTester() {
       result += escapeHtml(testStr.slice(lastIdx))
 
       const groups = matches[0]?.slice(1) || []
-      const replaceResult = replace && !isTruncated ? testStr.replace(new RegExp(pattern, flags), replace) : ''
+      const replaceResult = replace && !isTruncated ? testStr.replace(re, replace) : ''
 
       return { matches, highlighted: result, error: '', groups, replaceResult, isTruncated }
     } catch (e: unknown) {
@@ -210,7 +210,7 @@ export default function RegexTester() {
             )}
             {replace && isTruncated && (
               <p className="text-xs text-amber-600 dark:text-amber-400">
-                Replace preview is disabled when match results exceed {MAX_MATCHES}.
+                Replace preview is disabled for performance when match results exceed {MAX_MATCHES}.
               </p>
             )}
           </div>

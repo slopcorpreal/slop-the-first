@@ -42,22 +42,22 @@ export default function VideoConverter() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const setInputFile = useCallback((f: File | null) => {
-    if (!f) {
+    const clearSelectedState = () => {
       setFile(null)
-      setStatus('idle')
-      setLog('')
       setOutputUrl('')
       setOutputSize(0)
       setProgress(0)
       setDuration(0)
+    }
+
+    if (!f) {
+      clearSelectedState()
+      setStatus('idle')
+      setLog('')
       return
     }
     if (f.size > MAX_MEDIA_FILE_SIZE) {
-      setFile(null)
-      setOutputUrl('')
-      setOutputSize(0)
-      setProgress(0)
-      setDuration(0)
+      clearSelectedState()
       setStatus('error')
       setLog('File is too large. Please choose a media file up to 500 MB.')
       return
