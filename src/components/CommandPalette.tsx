@@ -177,7 +177,6 @@ export default function CommandPalette({ open, onClose }: Props) {
                 </p>
                 {tools.map((tool) => {
                   const globalIndex = ALL_TOOLS.indexOf(tool)
-                  void 0
                   const Icon = tool.icon
                   return (
                     <button
