@@ -14,6 +14,19 @@ const EXAMPLES = [
 ]
 
 const COLORS = ['#fde68a','#bbf7d0','#bfdbfe','#fecaca','#ddd6fe','#fed7aa','#cffafe','#f9a8d4']
+const MAX_PATTERN_LENGTH = 200
+const MAX_TEST_STRING_LENGTH = 20000
+const MAX_MATCHES = 2000
+
+function escapeHtml(value: string) {
+  return value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+}
+
+function hasCommonBacktrackingPatterns(pattern: string) {
+  const nestedQuantifiers = /\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]/
+  const overlappingGreedyGroups = /\((?:[^()\\]|\\.)+\)(?:\+|\*)\+/
+  return nestedQuantifiers.test(pattern) || overlappingGreedyGroups.test(pattern)
+}
 
 export default function RegexTester() {
   const [pattern, setPattern] = useState('[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}')
@@ -22,16 +35,51 @@ export default function RegexTester() {
   const [replace, setReplace] = useState('')
   const [copied, setCopied] = useState(false)
 
-  const { matches, highlighted, error, replaceResult } = useMemo(() => {
-    if (!pattern) return { matches: [], highlighted: testStr, error: '', groups: [], replaceResult: '' }
+  const { matches, highlighted, error, replaceResult, isTruncated } = useMemo(() => {
+    if (!pattern) return { matches: [], highlighted: testStr, error: '', groups: [], replaceResult: '', isTruncated: false }
+    if (pattern.length > MAX_PATTERN_LENGTH) {
+      return {
+        matches: [],
+        highlighted: testStr,
+        error: `Pattern is too long (${pattern.length}). Max supported length is ${MAX_PATTERN_LENGTH}.`,
+        groups: [],
+        replaceResult: '',
+        isTruncated: false
+      }
+    }
+    if (testStr.length > MAX_TEST_STRING_LENGTH) {
+      return {
+        matches: [],
+        highlighted: testStr,
+        error: `Test string is too long (${testStr.length}). Max supported length is ${MAX_TEST_STRING_LENGTH}.`,
+        groups: [],
+        replaceResult: '',
+        isTruncated: false
+      }
+    }
+    if (hasCommonBacktrackingPatterns(pattern)) {
+      return {
+        matches: [],
+        highlighted: testStr,
+        error: 'Pattern contains common catastrophic backtracking patterns.',
+        groups: [],
+        replaceResult: '',
+        isTruncated: false
+      }
+    }
     try {
       const re = new RegExp(pattern, flags)
       const matches: RegExpExecArray[] = []
+      let isTruncated = false
       if (flags.includes('g')) {
         let m: RegExpExecArray | null
         const re2 = new RegExp(pattern, flags)
         while ((m = re2.exec(testStr)) !== null) {
           matches.push(m)
+          if (matches.length >= MAX_MATCHES) {
+            isTruncated = true
+            break
+          }
           if (m.index === re2.lastIndex) re2.lastIndex++
         }
       } else {
@@ -42,26 +90,25 @@ export default function RegexTester() {
       // Highlight
       let result = ''
       let lastIdx = 0
-      const re3 = new RegExp(pattern, flags.includes('g') ? flags : flags + 'g')
-      let idx = 0
-      testStr.replace(re3, (m, ...args) => {
-        const offset = args[args.length - 2] as number
-        const esc = testStr.slice(lastIdx, offset).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        const mEsc = m.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      for (let idx = 0; idx < matches.length; idx++) {
+        const match = matches[idx]
+        const offset = match.index ?? 0
+        const m = match[0]
+        const esc = escapeHtml(testStr.slice(lastIdx, offset))
+        const mEsc = escapeHtml(m)
         const bg = COLORS[idx % COLORS.length]
         result += `${esc}<mark style="background:${bg};color:#000;border-radius:2px;padding:0 1px">${mEsc}</mark>`
         lastIdx = offset + m.length
-        idx++
-        return m
-      })
-      result += testStr.slice(lastIdx).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      }
+      result += escapeHtml(testStr.slice(lastIdx))
 
       const groups = matches[0]?.slice(1) || []
-      const replaceResult = replace ? testStr.replace(new RegExp(pattern, flags), replace) : ''
+      const replaceResult = replace && !isTruncated ? testStr.replace(re, replace) : ''
 
-      return { matches, highlighted: result, error: '', groups, replaceResult }
-    } catch (e: any) {
-      return { matches: [], highlighted: testStr, error: e.message, groups: [], replaceResult: '' }
+      return { matches, highlighted: result, error: '', groups, replaceResult, isTruncated }
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : String(e)
+      return { matches: [], highlighted: testStr, error: errorMessage, groups: [], replaceResult: '', isTruncated: false }
     }
   }, [pattern, flags, testStr, replace])
 
@@ -138,7 +185,7 @@ export default function RegexTester() {
               <div className="flex items-center justify-between mb-1">
                 <label className="label mb-0">Test String</label>
                 <span className={`badge ${matches.length > 0 ? 'badge-green' : 'bg-slate-100 dark:bg-slate-700 text-slate-500'}`}>
-                  {matches.length} match{matches.length !== 1 ? 'es' : ''}
+                  {isTruncated ? `${MAX_MATCHES}+` : matches.length} match{matches.length !== 1 || isTruncated ? 'es' : ''}
                 </span>
               </div>
               <textarea
@@ -160,6 +207,11 @@ export default function RegexTester() {
                 <p className="text-xs font-medium text-slate-500 mb-1">Replace Result</p>
                 <p className="text-sm font-mono whitespace-pre-wrap">{replaceResult}</p>
               </div>
+            )}
+            {replace && isTruncated && (
+              <p className="text-xs text-amber-600 dark:text-amber-400">
+                Replace preview is disabled for performance when match results exceed {MAX_MATCHES}.
+              </p>
             )}
           </div>
 
@@ -192,7 +244,12 @@ export default function RegexTester() {
                     </div>
                   </div>
                 ))}
-                {matches.length > 20 && <p className="text-xs text-slate-400">…and {matches.length - 20} more</p>}
+                {matches.length > 20 && !isTruncated && <p className="text-xs text-slate-400">…and {matches.length - 20} more</p>}
+                {isTruncated && (
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    Showing first {MAX_MATCHES} matches (results capped for responsiveness).
+                  </p>
+                )}
               </div>
             )}
           </div>
