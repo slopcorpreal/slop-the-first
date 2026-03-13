@@ -29,12 +29,12 @@ export default function ToolLayout({
           <div className={`w-12 h-12 bg-gradient-to-br ${iconColor} rounded-xl flex items-center justify-center shadow-lg flex-shrink-0`}>
             <Icon size={24} className="text-white" />
           </div>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
               <h1 className="text-2xl font-bold">{title}</h1>
               {badge && <span className={badgeColor}>{badge}</span>}
             </div>
-            <p className="text-slate-500 dark:text-slate-400">{description}</p>
+            <p className="text-slate-500 dark:text-slate-400 leading-relaxed">{description}</p>
           </div>
         </div>
       </div>

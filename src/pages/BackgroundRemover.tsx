@@ -135,21 +135,25 @@ export default function BackgroundRemover() {
             )}
           </div>
 
-          {status === 'processing' && (
-            <div className="space-y-2 animate-fade-in">
-              <div className="flex justify-between text-xs text-slate-500">
-                <span>Running AI inference…</span>
-                <span>{progress}%</span>
-              </div>
-              <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.max(progress, 5)}%` }}
-                />
-              </div>
-              <p className="text-xs text-slate-400 text-center">
-                First run downloads ~40MB AI model (cached afterward)
-              </p>
+          {file && (
+            <div className="min-h-20">
+              {status === 'processing' && (
+                <div className="space-y-2 animate-fade-in">
+                  <div className="flex justify-between text-xs text-slate-500">
+                    <span>Running AI inference…</span>
+                    <span>{progress}%</span>
+                  </div>
+                  <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.max(progress, 5)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-slate-400 text-center">
+                    First run downloads ~40MB AI model (cached afterward)
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
@@ -190,12 +194,12 @@ export default function BackgroundRemover() {
                 </div>
               </div>
               <div
-                className="rounded-xl overflow-hidden flex items-center justify-center min-h-48 border border-slate-200 dark:border-slate-700"
+                className="rounded-xl overflow-hidden flex items-center justify-center aspect-video border border-slate-200 dark:border-slate-700"
                 style={{
                   background: showBg ? bgColor : 'repeating-conic-gradient(#ccc 0% 25%, white 0% 50%) 0 0 / 16px 16px',
                 }}
               >
-                <img src={outputUrl} alt="output" className="max-h-64 max-w-full object-contain" />
+                <img src={outputUrl} alt="output" className="max-h-full max-w-full object-contain" />
               </div>
               <canvas ref={canvasRef} className="hidden" />
               <a
@@ -207,7 +211,7 @@ export default function BackgroundRemover() {
               </a>
             </div>
           ) : (
-            <div className="card p-8 text-center text-slate-400 border-dashed h-full flex flex-col items-center justify-center min-h-48">
+            <div className="card p-8 text-center text-slate-400 border-dashed h-full flex flex-col items-center justify-center aspect-video">
               <ImageOff size={48} className="mb-3 opacity-20" />
               <p className="text-sm">Output will appear here</p>
             </div>

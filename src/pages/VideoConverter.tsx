@@ -226,23 +226,27 @@ export default function VideoConverter() {
         {/* Right: Output */}
         <div className="space-y-4">
           {/* Progress */}
-          {(status === 'loading' || status === 'processing') && (
-            <div className="card p-4 space-y-3 animate-fade-in">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium flex items-center gap-2">
-                  <Loader2 size={14} className="animate-spin text-brand-500" />
-                  {status === 'loading' ? 'Loading FFmpeg…' : 'Converting…'}
-                </span>
-                <span className="text-slate-500">{progress}%</span>
-              </div>
-              <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-brand-500 to-purple-500 rounded-full transition-all duration-300"
-                  style={{ width: `${progress}%` }}
-                />
-              </div>
-              {duration > 0 && (
-                <p className="text-xs text-slate-400">Time: {formatTime(duration)}</p>
+          {file && (
+            <div className="min-h-28">
+              {(status === 'loading' || status === 'processing') && (
+                <div className="card p-4 space-y-3 animate-fade-in">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium flex items-center gap-2">
+                      <Loader2 size={14} className="animate-spin text-brand-500" />
+                      {status === 'loading' ? 'Loading FFmpeg…' : 'Converting…'}
+                    </span>
+                    <span className="text-slate-500">{progress}%</span>
+                  </div>
+                  <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-brand-500 to-purple-500 rounded-full transition-all duration-300"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  {duration > 0 && (
+                    <p className="text-xs text-slate-400">Time: {formatTime(duration)}</p>
+                  )}
+                </div>
               )}
             </div>
           )}
@@ -266,13 +270,13 @@ export default function VideoConverter() {
                 <span className="text-xs text-slate-400">{formatBytes(outputSize)}</span>
               </div>
               {['mp4', 'webm'].includes(format) && (
-                <video controls className="w-full rounded-lg" src={outputUrl} />
+                <video controls className="w-full rounded-lg bg-slate-950 aspect-video" src={outputUrl} />
               )}
               {['mp3', 'wav'].includes(format) && (
                 <audio controls className="w-full" src={outputUrl} />
               )}
               {format === 'gif' && (
-                <img src={outputUrl} alt="output gif" className="max-w-full rounded-lg" />
+                <img src={outputUrl} alt="output gif" className="w-full rounded-lg bg-slate-950 aspect-video object-contain" />
               )}
               <a
                 href={outputUrl}
