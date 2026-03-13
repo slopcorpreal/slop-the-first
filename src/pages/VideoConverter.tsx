@@ -48,9 +48,16 @@ export default function VideoConverter() {
       setLog('')
       setOutputUrl('')
       setOutputSize(0)
+      setProgress(0)
+      setDuration(0)
       return
     }
     if (f.size > MAX_MEDIA_FILE_SIZE) {
+      setFile(null)
+      setOutputUrl('')
+      setOutputSize(0)
+      setProgress(0)
+      setDuration(0)
       setStatus('error')
       setLog('File is too large. Please choose a media file up to 500 MB.')
       return
