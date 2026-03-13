@@ -25,8 +25,26 @@ function md5(input: string): string {
   function md5hh(a: number, b: number, c: number, d: number, x: number, s: number, t: number) { return md5cmn(b ^ c ^ d, a, b, x, s, t) }
   function md5ii(a: number, b: number, c: number, d: number, x: number, s: number, t: number) { return md5cmn(c ^ (b | ~d), a, b, x, s, t) }
 
-  const bytes: number[] = []
-  for (let i = 0; i < input.length; i++) { const c = input.charCodeAt(i); if (c < 128) bytes.push(c); else if (c < 2048) { bytes.push((c >> 6) | 192); bytes.push((c & 63) | 128) } else { bytes.push((c >> 12) | 224); bytes.push(((c >> 6) & 63) | 128); bytes.push((c & 63) | 128) } }
+  // Encode the string as UTF-8 bytes
+  function encodeUtf8(str: string): number[] {
+    const out: number[] = []
+    for (let i = 0; i < str.length; i++) {
+      const c = str.charCodeAt(i)
+      if (c < 128) {
+        out.push(c)
+      } else if (c < 2048) {
+        out.push((c >> 6) | 192)
+        out.push((c & 63) | 128)
+      } else {
+        out.push((c >> 12) | 224)
+        out.push(((c >> 6) & 63) | 128)
+        out.push((c & 63) | 128)
+      }
+    }
+    return out
+  }
+
+  const bytes: number[] = encodeUtf8(input)
   const len8 = bytes.length
   bytes.push(128)
   while (bytes.length % 64 !== 56) bytes.push(0)

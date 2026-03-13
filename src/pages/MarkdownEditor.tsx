@@ -73,7 +73,9 @@ export default function MarkdownEditor() {
   }
 
   const downloadHtml = () => {
-    const tempDiv = document.createElement('div')
+    // Grab the rendered preview HTML from the DOM
+    const previewEl = document.querySelector('.md-preview-content')
+    const renderedHtml = previewEl ? previewEl.innerHTML : ''
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,10 +93,13 @@ export default function MarkdownEditor() {
   th { background: #f8f8f8; }
   img { max-width: 100%; }
   hr { border: none; border-top: 1px solid #eee; }
+  h1, h2 { border-bottom: 1px solid #eee; padding-bottom: 0.3em; }
+  a { color: #5b6cf2; }
+  ul, ol { padding-left: 1.5em; }
 </style>
 </head>
 <body>
-${tempDiv.innerHTML}
+${renderedHtml}
 </body>
 </html>`
     const blob = new Blob([html], { type: 'text/html' })
@@ -155,9 +160,11 @@ ${tempDiv.innerHTML}
           <div>
             {view === 'split' && <label className="label">Preview</label>}
             <div className="card p-6 min-h-[600px] prose prose-slate dark:prose-invert max-w-none overflow-auto">
+              <div className="md-preview-content">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {md}
               </ReactMarkdown>
+              </div>
             </div>
           </div>
         )}
