@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/slop-the-first/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ToolKit — A powerful suite of browser-based tools. Video converter, background remover, image compressor, JSON formatter, QR generator, regex tester, markdown editor, and more. 100% free, private, runs in your browser." />
+    <meta name="keywords" content="online tools, video converter, background remover, image compressor, QR code generator, JSON formatter, regex tester, markdown editor, hash generator, base64 encoder, text diff, developer tools, free tools" />
+    <meta name="author" content="ToolKit" />
+    <meta property="og:title" content="ToolKit — Browser-Powered Dev & Media Tools" />
+    <meta property="og:description" content="A powerful suite of 100% browser-based tools. Video converter with FFmpeg WASM, AI background remover, JSON formatter, QR generator, and more." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://slopcorpreal.github.io/slop-the-first/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="ToolKit — Browser-Powered Dev & Media Tools" />
+    <meta name="twitter:description" content="A powerful suite of free browser-based tools. No uploads, 100% private." />
+    <link rel="canonical" href="https://slopcorpreal.github.io/slop-the-first/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <title>ToolKit — Browser-Powered Dev & Media Tools</title>
+    <script>
+      // Apply dark mode from localStorage before render to prevent flash
+      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.documentElement.classList.add('dark')
+      }
+      // Handle GitHub Pages SPA redirect
+      (function(l) {
+        if (l.search[1] === '/' ) {
+          var decoded = l.search.slice(1).split('&').map(function(s) {
+            return s.replace(/~and~/g, '&')
+          }).join('?');
+          window.history.replaceState(null, null,
+            l.pathname.slice(0, -1) + decoded + l.hash
+          );
+        }
+      }(window.location))
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

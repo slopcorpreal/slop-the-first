@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/video-converter</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/background-remover</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/image-compressor</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/qr-generator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/json-formatter</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/base64</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/regex-tester</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/markdown-editor</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/hash-generator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/timestamp</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/url-encoder</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/text-diff</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/color-palette</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://slopcorpreal.github.io/slop-the-first/css-gradient</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+</urlset>
