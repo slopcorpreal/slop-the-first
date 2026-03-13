@@ -18,7 +18,7 @@ const MAX_PATTERN_LENGTH = 200
 const MAX_TEST_STRING_LENGTH = 20000
 const MAX_MATCHES = 2000
 
-function isPotentiallyUnsafeRegex(pattern: string) {
+function hasCommonBacktrackingPatterns(pattern: string) {
   const nestedQuantifiers = /\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]/
   const overlappingGreedyGroups = /\((?:[^()\\]|\\.)+\)(?:\+|\*)\+/
   return nestedQuantifiers.test(pattern) || overlappingGreedyGroups.test(pattern)
@@ -51,11 +51,11 @@ export default function RegexTester() {
         replaceResult: ''
       }
     }
-    if (isPotentiallyUnsafeRegex(pattern)) {
+    if (hasCommonBacktrackingPatterns(pattern)) {
       return {
         matches: [],
         highlighted: testStr,
-        error: 'Pattern looks potentially unsafe (catastrophic backtracking risk).',
+        error: 'Pattern contains common catastrophic backtracking patterns.',
         groups: [],
         replaceResult: ''
       }

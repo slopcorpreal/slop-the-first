@@ -114,10 +114,12 @@ export default function VideoConverter() {
   }
 
   const reset = () => {
-    setInputFile(null)
+    setFile(null)
     setStatus('idle')
     setProgress(0)
     setLog('')
+    setOutputUrl('')
+    setOutputSize(0)
   }
 
   useEffect(() => {

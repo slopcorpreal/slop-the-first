@@ -20,6 +20,10 @@ interface Result {
 
 const MAX_IMAGE_FILE_SIZE = 50 * 1024 * 1024
 
+function isOutputFormat(value: string): value is 'jpeg' | 'png' | 'webp' {
+  return value === 'jpeg' || value === 'png' || value === 'webp'
+}
+
 export default function ImageCompressor() {
   const [file, setFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState('')
@@ -131,7 +135,13 @@ export default function ImageCompressor() {
           <div className="card p-4 space-y-4">
             <div>
               <label className="label">Output Format</label>
-              <select className="input" value={format} onChange={e => setFormat(e.target.value as 'jpeg' | 'png' | 'webp')}>
+              <select
+                className="input"
+                value={format}
+                onChange={e => {
+                  if (isOutputFormat(e.target.value)) setFormat(e.target.value)
+                }}
+              >
                 <option value="webp">WebP (best compression)</option>
                 <option value="jpeg">JPEG</option>
                 <option value="png">PNG (lossless)</option>
