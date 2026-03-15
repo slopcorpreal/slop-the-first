@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { KeyRound, Copy, Check, AlertCircle, Clock } from 'lucide-react'
 import ToolLayout from '../components/ToolLayout'
 
@@ -16,6 +16,11 @@ function b64decode(s: string): string {
 
 function prettyJson(obj: unknown) {
   return JSON.stringify(obj, null, 2)
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  return 'Unknown error'
 }
 
 const ALG_DESCRIPTIONS: Record<string, string> = {
@@ -53,7 +58,7 @@ function SyntaxHighlight({ json }: { json: string }) {
   const html = json
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(
-      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
       m => {
         let cls = 'text-blue-400'
         if (/^"/.test(m)) cls = /:$/.test(m) ? 'text-red-400' : 'text-green-300'
@@ -68,7 +73,14 @@ function SyntaxHighlight({ json }: { json: string }) {
 export default function JWTDebugger() {
   const [token, setToken] = useState(SAMPLE)
   const [copied, setCopied] = useState<string | null>(null)
-  const now = Math.floor(Date.now() / 1000)
+  const [now, setNow] = useState(() => Math.floor(new Date().getTime() / 1000))
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setNow(Math.floor(new Date().getTime() / 1000))
+    }, 1000)
+    return () => clearInterval(id)
+  }, [])
 
   const parsed = useMemo(() => {
     const parts = token.trim().split('.')
@@ -78,8 +90,8 @@ export default function JWTDebugger() {
       const payload = JSON.parse(b64decode(parts[1]))
       const sig = parts[2]
       return { header, payload, sig, error: null }
-    } catch (e: any) {
-      return { error: `Parse error: ${e.message}` }
+    } catch (error: unknown) {
+      return { error: `Parse error: ${getErrorMessage(error)}` }
     }
   }, [token])
 

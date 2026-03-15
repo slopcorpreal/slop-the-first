@@ -7,11 +7,16 @@ const SAMPLES = {
   api: '{"status":"success","data":{"users":[{"id":1,"name":"Alice","email":"alice@example.com","role":"admin"},{"id":2,"name":"Bob","email":"bob@example.com","role":"user"}],"total":2,"page":1}}',
 }
 
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  return 'Unknown error'
+}
+
 function syntaxHighlight(json: string): string {
   return json
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(
-      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+      /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g,
       match => {
         let cls = 'text-blue-400'
         if (/^"/.test(match)) {
@@ -46,8 +51,8 @@ export default function JSONFormatter() {
       JSON.parse(input)
       setError('')
       return true
-    } catch (e: any) {
-      setError(e.message)
+    } catch (error: unknown) {
+      setError(getErrorMessage(error))
       return false
     }
   }, [input])
@@ -69,8 +74,8 @@ export default function JSONFormatter() {
       }
       setInput(stringified)
       setError('')
-    } catch (e: any) {
-      setError(e.message)
+    } catch (error: unknown) {
+      setError(getErrorMessage(error))
     }
   }, [input, indent, sortKeys])
 
@@ -78,8 +83,8 @@ export default function JSONFormatter() {
     try {
       setInput(JSON.stringify(JSON.parse(input)))
       setError('')
-    } catch (e: any) {
-      setError(e.message)
+    } catch (error: unknown) {
+      setError(getErrorMessage(error))
     }
   }, [input])
 
