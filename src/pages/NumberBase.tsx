@@ -42,7 +42,7 @@ const BITWISE_OPS = [
   { op: 'AND', sym: '&',  fn: (a: bigint, b: bigint) => a & b },
   { op: 'OR',  sym: '|',  fn: (a: bigint, b: bigint) => a | b },
   { op: 'XOR', sym: '^',  fn: (a: bigint, b: bigint) => a ^ b },
-  { op: 'NOT', sym: '~',  fn: (a: bigint, _: bigint) => ~a },
+  { op: 'NOT', sym: '~',  fn: (a: bigint, b: bigint) => { void b; return ~a } },
   { op: 'SHL', sym: '<<', fn: (a: bigint, b: bigint) => a << b },
   { op: 'SHR', sym: '>>', fn: (a: bigint, b: bigint) => a >> b },
 ]

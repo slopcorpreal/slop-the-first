@@ -64,15 +64,9 @@ export default function CommandPalette({ open, onClose }: Props) {
 
   useEffect(() => {
     if (open) {
-      setQuery('')
-      setSelected(0)
       setTimeout(() => inputRef.current?.focus(), 50)
     }
   }, [open])
-
-  useEffect(() => {
-    setSelected(0)
-  }, [query])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -132,7 +126,10 @@ export default function CommandPalette({ open, onClose }: Props) {
             className="flex-1 bg-transparent outline-none text-sm placeholder-slate-400"
             placeholder="Search tools…"
             value={query}
-            onChange={e => setQuery(e.target.value)}
+            onChange={e => {
+              setQuery(e.target.value)
+              setSelected(0)
+            }}
           />
           <div className="flex items-center gap-1 text-xs text-slate-400 shrink-0">
             <kbd className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded font-mono">↑↓</kbd>

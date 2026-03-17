@@ -19,7 +19,7 @@ const FORMATS = [
     const m = Math.floor(s / 60)
     const h = Math.floor(m / 60)
     const day = Math.floor(h / 24)
-    let str = s < 60 ? `${s}s` : m < 60 ? `${m}m` : h < 24 ? `${h}h` : `${day}d`
+    const str = s < 60 ? `${s}s` : m < 60 ? `${m}m` : h < 24 ? `${h}h` : `${day}d`
     return future ? `in ${str}` : `${str} ago`
   }},
 ]
@@ -32,9 +32,9 @@ const ZONES = [
 ]
 
 export default function TimestampConverter() {
-  const [now, setNow] = useState(new Date())
-  const [input, setInput] = useState(Math.floor(Date.now() / 1000).toString())
-  const [parsed, setParsed] = useState<Date | null>(new Date())
+  const [now, setNow] = useState(() => new Date())
+  const [input, setInput] = useState(() => Math.floor(new Date().getTime() / 1000).toString())
+  const [parsed, setParsed] = useState<Date | null>(() => new Date())
   const [error, setError] = useState('')
   const [running, setRunning] = useState(true)
   const [copied, setCopied] = useState('')
